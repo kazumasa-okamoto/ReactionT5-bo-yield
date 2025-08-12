@@ -40,6 +40,7 @@ print("化学構造をInChI形式からSMILES形式に変換中...")
 # 変化する要素を変換
 df['electrophile_smiles'] = df['electrophile_inchi'].apply(convert_inchi_to_smiles)
 df['ligand_smiles'] = df['ligand_inchi'].apply(convert_inchi_to_smiles)
+df['solvent_smiles'] = df['solvent_inchi'].apply(convert_inchi_to_smiles)
 df['product_smiles'] = df['product_inchi'].apply(convert_inchi_to_smiles)
 
 print("SMILESへの変換が完了しました。")
@@ -50,17 +51,23 @@ print("Reaction T5の入力形式に合わせてデータを整形中...")
 # 新しいDataFrameを作成
 t5_df = pd.DataFrame()
 
-# 1. REACTANT列: 求電子剤 (electrophile) と 求核剤 (nucleophile) を'.'で連結
 df['nucleophile_smiles'] = NUCLEOPHILE_SMILES
-t5_df['REACTANT'] = df['electrophile_smiles'] + '.' + df['nucleophile_smiles']
 
-# 2. REAGENT列: 配位子 (ligand)
-t5_df['REAGENT'] = df['ligand_smiles']
+# REACTANT列: 求電子剤
+t5_df['REACTANT'] = df['electrophile_smiles'] 
 
-# 3. PRODUCT列
+# REAGENT列:求核材（ボロン酸）
+t5_df['REAGENT'] = df['nucleophile_smiles']
+
+# "CATALYST"列: リガンド
+t5_df['CATALYST'] = df['ligand_smiles']
+
+# "SOLVENT"列: 溶媒
+t5_df['SOLVENT'] = df['solvent_smiles']
+# PRODUCT列
 t5_df['PRODUCT'] = df['product_smiles']
 
-# 4. YIELD列
+# YIELD列
 t5_df['YIELD'] = df['yield']
 
 print("データの整形が完了しました。")
