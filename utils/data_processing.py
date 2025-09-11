@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 from rdkit import Chem
 from rdkit import RDLogger 
 
@@ -18,8 +19,8 @@ def convert_inchi_to_smiles(inchi_string: str) -> str:
     return ''
 
 # --- STEP 1: ファイルと定数の定義 ---
-INPUT_FILENAME = 'data/inchi_23l.csv'
-OUTPUT_FILENAME = 'data/inchi_23l_reaction_t5_ready.csv'
+INPUT_FILENAME = Path(__file__).parent.parent / 'data' / 'inchi_23l.csv'
+OUTPUT_FILENAME = Path(__file__).parent.parent / 'data' / 'inchi_23l_reaction_t5_ready.csv'
 
 # 全ての反応で共通の求核剤（Nucleophile）
 NUCLEOPHILE_SMILES = 'OB(O)B(O)O' # テトラヒドロキシジボロン
