@@ -19,8 +19,8 @@ def convert_inchi_to_smiles(inchi_string: str) -> str:
     return ''
 
 # --- STEP 1: ファイルと定数の定義 ---
-INPUT_FILENAME = Path(__file__).parent.parent / 'data' / 'inchi_23l.csv'
-OUTPUT_FILENAME = Path(__file__).parent.parent / 'data' / 'inchi_23l_reaction_t5_ready.csv'
+INPUT_FILENAME = Path(__file__).parent.parent.parent / 'data' / "NiB" / 'inchi_23l.csv'
+OUTPUT_FILENAME = Path(__file__).parent.parent.parent / 'data' / "NiB" / 'inchi_23l_reaction_t5_ready.csv'
 
 # 全ての反応で共通の求核剤（Nucleophile）
 NUCLEOPHILE_SMILES = 'OB(O)B(O)O' # テトラヒドロキシジボロン
@@ -65,6 +65,7 @@ t5_df['CATALYST'] = df['ligand_smiles']
 
 # "SOLVENT"列: 溶媒
 t5_df['SOLVENT'] = df['solvent_smiles']
+
 # PRODUCT列
 t5_df['PRODUCT'] = df['product_smiles']
 

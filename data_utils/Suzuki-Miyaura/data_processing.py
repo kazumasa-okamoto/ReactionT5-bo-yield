@@ -7,8 +7,8 @@ from rdkit import RDLogger
 RDLogger.DisableLog('rdApp.*')
 
 # ---- 入出力 ----
-INPUT_CSV = Path(__file__).parent.parent / "data" / "aap9112_Data_File_S1.csv"
-OUTPUT_CSV = Path(__file__).parent.parent / "data" / "aap9112_reaction_t5_ready.csv"
+INPUT_CSV = Path(__file__).parent.parent.parent / "data" / "Suzuki-Miyaura" / "aap9112_complete_grid.csv"
+OUTPUT_CSV = Path(__file__).parent.parent.parent / "data" / "Suzuki-Miyaura"/ "aap9112_reaction_t5_ready.csv"
 
 # ---- 名前→SMILES 対応 ----
 reactant_1_smiles = {
@@ -116,18 +116,15 @@ def main():
             return canon(f"{a}.{b}")
         return a or b
 
-    # REACTANT は Reactant_1 のみ
-    reactant_col = rct1
-
-    # REAGENT は Reactant_2 + Base
-    reagent_col  = pd.Series([dot_join(b, c) for b, c in zip(rct2, base)], index=df.index)
+    # REACTANT は Reactant_1 + Reactant_2
+    reactant_col =  pd.Series([dot_join(a, b) for a, b in zip(rct1, rct2)], index=df.index)
 
     # Pd(OAc)2 + 配位子
     catalyst_col = pd.Series([dot_join(a, b) for a, b in zip(pdsrc, lig)], index=df.index)
 
     t5 = pd.DataFrame({
         'REACTANT': reactant_col,
-        'REAGENT' : reagent_col,
+        'REAGENT' : base,
         'CATALYST': catalyst_col,
         'SOLVENT' : solv,
         'PRODUCT' : prod,
