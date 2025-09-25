@@ -37,11 +37,13 @@ def normalize(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def unique_levels(df: pd.DataFrame):
-    """各要因のユニーク水準を取得。"""
+    """各要因のユニーク水準を取得（Noneは除外）。"""
     levels = {}
     for c in FACTOR_COLS:
         arr = df[c].apply(lambda x: None if pd.isna(x) else str(x).strip())
         uniq = pd.unique(arr).tolist()
+        # Noneを除外
+        uniq = [x for x in uniq if x is not None]
         levels[c] = uniq
     return levels
 
@@ -202,21 +204,20 @@ def find_max_complete_grid(df: pd.DataFrame):
 
 def extract_full_grid_rows(df: pd.DataFrame, config: dict) -> pd.DataFrame:
     """
-    見つけた最大完全格子（config）の行のみを抽出し、重複を除去。
+    見つけた最大完全格子（config）の行のみを抽出し、重複を除去（Noneは除外）。
     """
     df = normalize(df)
     mask = pd.Series(True, index=df.index)
 
     for col in FACTOR_COLS:
         vals = config[col]
-        has_none = any(v is None for v in vals)
+        # Noneは除外して処理
         vals_wo_none = [v for v in vals if v is not None]
 
-        cond = pd.Series(False, index=df.index)
         if vals_wo_none:
-            cond = cond | df[col].apply(lambda x: (not pd.isna(x)) and (str(x).strip() in vals_wo_none))
-        if has_none:
-            cond = cond | df[col].isna()
+            cond = df[col].apply(lambda x: (not pd.isna(x)) and (str(x).strip() in vals_wo_none))
+        else:
+            cond = pd.Series(False, index=df.index)
 
         mask = mask & cond
 
@@ -251,8 +252,13 @@ def main():
     sub = extract_full_grid_rows(df, best)
     sub.to_csv(output_csv, index=False)
 
-    # 全水準（探索に用いた全集合）
-    levels_all = unique_levels(normalize(df))
+    # 全水準（探索に用いた全集合）- 表示用にはNoneも含める
+    levels_all = {}
+    df_norm = normalize(df)
+    for c in FACTOR_COLS:
+        arr = df_norm[c].apply(lambda x: None if pd.isna(x) else str(x).strip())
+        uniq = pd.unique(arr).tolist()
+        levels_all[c] = uniq
 
     # 出力
     print("==== 最大完全格子をCSVに保存しました ====")
