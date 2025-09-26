@@ -260,7 +260,7 @@ def main():
     print("==== 最大完全格子をCSVに保存しました ====")
     print(f"Path: {output_csv}\n")
 
-    print("==== 完全格子 構成（LigandとBaseをアンカー） ====")
+    print("==== 完全格子 構成 ====")
     print(f"アンカーペア: {best.get('anchor_pair')}")
     print(f"L: {len(best['Ligand'])}, Add: {len(best['Additive'])}, "
           f"B: {len(best['Base'])}, AH: {len(best['Aryl halide'])}")

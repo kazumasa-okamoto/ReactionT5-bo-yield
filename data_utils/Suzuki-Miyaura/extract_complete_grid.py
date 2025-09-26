@@ -264,11 +264,11 @@ def main():
     print("==== 最大完全格子をCSVに保存しました ====")
     print(f"Path: {output_csv}\n")
 
-    print("==== 完全格子 構成（Reactant_1_NameとReactant_2_Nameをアンカー） ====")
+    print("==== 完全格子 構成 ====")
     print(f"アンカーペア: {best.get('anchor_pair')}")
     print(f"R1: {len(best['Reactant_1_Name'])}, R2: {len(best['Reactant_2_Name'])}, "
           f"Cat: {len(best['Catalyst_1_Short_Hand'])}, L: {len(best['Ligand_Short_Hand'])}, "
-          f"B: {len(best['Reagent_1_Short_Hand'])}, S: {len(best['Solvent_1_Short_Hand'])}")
+          f"R: {len(best['Reagent_1_Short_Hand'])}, S: {len(best['Solvent_1_Short_Hand'])}")
     print(_product_breakdown(best))
     print()
 
@@ -277,7 +277,7 @@ def main():
     print("R2:", set(levels_all["Reactant_2_Name"]) - set(best["Reactant_2_Name"]))
     print("Cat:", set(levels_all["Catalyst_1_Short_Hand"]) - set(best["Catalyst_1_Short_Hand"]))
     print("Lig:", set(levels_all["Ligand_Short_Hand"]) - set(best["Ligand_Short_Hand"]))
-    print("Base:", set(levels_all["Reagent_1_Short_Hand"]) - set(best["Reagent_1_Short_Hand"]))
+    print("Reagent:", set(levels_all["Reagent_1_Short_Hand"]) - set(best["Reagent_1_Short_Hand"]))
     print("Solvent:", set(levels_all["Solvent_1_Short_Hand"]) - set(best["Solvent_1_Short_Hand"]))
 
 
