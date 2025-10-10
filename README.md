@@ -2,24 +2,33 @@
 [ochem-data](https://github.com/doyle-lab-ucla/ochem-data)の[NiB](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB)データセットと、[rxn_yields](https://github.com/rxn4chemistry/rxn_yields)の[Suzuki-Miyaura](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura)データセット、[Buchwald-Hartwig](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Buchwald-Hartwig)データセットを実際の実験結果として、[ReactionT5v2](https://github.com/sagawatatsuya/ReactionT5v2?tab=readme-ov-file)を用いたベイズ最適化によってその中から収率の高い反応条件を探索します
 
 ## ノートブックの概要
+
+- check_data.ipynb：ReactionT5v2が学習に使用した[ORD](https://drive.google.com/file/d/1JozA2OlByfZ-ILt5H5YrTjLJvSvD8xdL/view?usp=drive_link)データセットのtrainデータに、NiBデータセット、Suzuki-Miyauraデータセット、Buchwald-Hartwigデータセットと類似の反応が含まれているかどうかを確認します
+
 **NiBデータセット**
 
 - bo_yield_NiB.ipynb：NiBデータセットに対して、ReactionT5v2にMC Dropoutを適用することで収率予測の平均と分散を出力し、これを用いてベイズ最適化により収率の高い反応条件を探索します
 
-- greedy_yield_NiB.ipynb：NiBデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します
+- greedy_yield_NiB.ipynb：NiBデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します。
 
 - optuna_yeild_NiB.ipynb：NiBデータセットに対して、Optunaを用いて収率の高い反応条件を探索します。TPESamplerを用いた場合、GPSamplerを用いた場合をそれぞれ実験しています。この結果をベースラインとして使用します。
+
+- gpr_yield_NiB.ipynb：NiBデータセットに対して、RDKitのMorgan Fingerprintを特徴量とし、Scikit-learnのGaussianProcessRegressorを用いてベイズ最適化により収率の高い反応を探索します。この結果もベースラインとして使用します。
 
 **Suzuki-Miyauraデータセット**
 - bo_yield_SM.ipynb：Suzuki-Miyauraデータセットに対して、ReactionT5v2にMC Dropoutを適用することで収率予測の平均と分散を出力し、これを用いてベイズ最適化により収率の高い反応条件を探索します
 
-- greedy_yield_SM.ipynb：Suzuki-Miyauraデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します
+- greedy_yield_SM.ipynb：Suzuki-Miyauraデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します。
 
 - optuna_yeild_SM.ipynb：Suzuki-Miyauraデータセットに対して、Optunaを用いて収率の高い反応条件を探索します。TPESamplerを用いた場合、GPSamplerを用いた場合をそれぞれ実験しています。この結果をベースラインとして使用します。
+
+- gpr_yield_SM.ipynb：Suzuki-Miyauraデータセットに対して、RDKitのMorgan Fingerprintを特徴量とし、Scikit-learnのGaussianProcessRegressorを用いてベイズ最適化により収率の高い反応を探索します。この結果もベースラインとして使用します。
 
 **Buchwald-Hartwigデータセット**
 - bo_yield_BH.ipynb：Buchwald-Hartwigデータセットに対して、ReactionT5v2にMC Dropoutを適用することで収率予測の平均と分散を出力し、これを用いてベイズ最適化により収率の高い反応条件を探索します
 
-- greedy_yield_BH.ipynb：Buchwald-Hartwigデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します
+- greedy_yield_BH.ipynb：Buchwald-Hartwigデータセットに対して、貪欲法を用いてReactionT5v2が高い収率を予測した反応から探索します。
 
 - optuna_yeild_BH.ipynb：Buchwald-Hartwigデータセットに対して、Optunaを用いて収率の高い反応条件を探索します。TPESamplerを用いた場合、GPSamplerを用いた場合をそれぞれ実験しています。この結果をベースラインとして使用します。
+
+- gpr_yield_BH.ipynb：Buchwald-Hartwigデータセットに対して、RDKitのMorgan Fingerprintを特徴量とし、Scikit-learnのGaussianProcessRegressorを用いてベイズ最適化により収率の高い反応を探索します。この結果もベースラインとして使用します。
