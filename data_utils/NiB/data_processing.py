@@ -54,11 +54,11 @@ t5_df = pd.DataFrame()
 
 df['nucleophile_smiles'] = NUCLEOPHILE_SMILES
 
-# REACTANT列: 求電子剤
-t5_df['REACTANT'] = df['electrophile_smiles'] 
+# REACTANT列: 求電子剤 + 求核材（ボロン酸）
+t5_df['REACTANT'] = df['electrophile_smiles'].astype(str)  + '.' + df['nucleophile_smiles'].astype(str)
 
-# REAGENT列:求核材（ボロン酸）
-t5_df['REAGENT'] = df['nucleophile_smiles']
+# REAGENT列:なし
+t5_df['REAGENT'] = ""
 
 # "CATALYST"列: リガンド
 t5_df['CATALYST'] = df['ligand_smiles']

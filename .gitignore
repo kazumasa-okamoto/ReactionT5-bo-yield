@@ -8,3 +8,6 @@ __pycache__/
 runs
 
 data/ORD
+
+*.pid
+*.log
