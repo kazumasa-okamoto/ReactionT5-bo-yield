@@ -16,11 +16,12 @@ import matplotlib.pyplot as plt
 class GPRConfig:
     """Configuration for GPR Bayesian optimization."""
     n_trials: int = 100
-    radius: int = 2
+    radius: int = 4
     n_bits: int = 2048
     output_dir: str = "runs/gpr_yield"
     log_csv_name: str = "optimization_log.csv"
     study_seed: int = 42
+    n_random_initial: int = 10  # Number of random initial samples
 
 
 class GaussianProcessBayesianOptimization:
@@ -62,7 +63,10 @@ class GaussianProcessBayesianOptimization:
         self.tried_combinations = set()
         self.X_train = []
         self.y_train = []
-        
+
+        # Random number generator for initial sampling
+        self.rng = np.random.RandomState(config.study_seed)
+
         # Output directory
         os.makedirs(config.output_dir, exist_ok=True)
         self.log_csv_path = os.path.join(config.output_dir, config.log_csv_name)
@@ -110,42 +114,47 @@ class GaussianProcessBayesianOptimization:
     def _select_next_candidate(self):
         """Select next candidate based on acquisition function."""
         untried_combinations = [
-            combo for combo in self.valid_combinations 
+            combo for combo in self.valid_combinations
             if combo not in self.tried_combinations
         ]
-        
+
         if not untried_combinations:
             print("All combinations tried.")
             return None
-        
+
+        # Random selection for initial samples
+        if len(self.experiment_history) < self.config.n_random_initial:
+            selected_combo = untried_combinations[self.rng.choice(len(untried_combinations))]
+            print(f"[Random Initial Selection] Candidate {selected_combo}")
+            return selected_combo
+
         best_yield = self._get_best_observed_yield()
-        
+
         # Create fingerprints list
         fingerprints = []
         for reactant, reagent in untried_combinations:
             product = self.product_dict[(reactant, reagent)]
             fp = self.fingerprint_dict[(reactant, reagent, product)]
             fingerprints.append(fp)
-        
+
         fingerprints = np.array(fingerprints)
-        
+
         print(f"Calculating acquisition values for {len(untried_combinations)} candidates...")
-        
+
         try:
             pred_means, pred_stds = self._predict_yield_with_uncertainty(fingerprints)
             acq_values = self._acquisition_function(pred_means, pred_stds, best_yield)
-            
+
             best_idx = np.argmax(acq_values)
             selected_combo = untried_combinations[best_idx]
-            
+
             print(f"[Selection] Candidate {selected_combo} (EI={acq_values[best_idx]:.4f})")
-            
+
             return selected_combo
-            
+
         except Exception as e:
             print(f"[Error] Acquisition calculation failed: {e}")
-            import random
-            return random.choice(untried_combinations)
+            return untried_combinations[self.rng.choice(len(untried_combinations))]
     
     def _evaluate_candidate(self, reactant, reagent, trial_num):
         """Evaluate candidate (run experiment)."""

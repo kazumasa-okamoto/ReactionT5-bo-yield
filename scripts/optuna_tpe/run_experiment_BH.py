@@ -62,7 +62,7 @@ def main():
                         help="Number of optimization trials")
     parser.add_argument("--seed", type=int, default=42,
                         help="Random seed for reproducibility")
-    parser.add_argument("--output-dir", type=str, default="../../runs",
+    parser.add_argument("--output-dir", type=str, default="runs",
                         help="Output directory for results")
     parser.add_argument("--n-startup-trials", type=int, default=10,
                         help="Number of random sampling trials before TPE starts")

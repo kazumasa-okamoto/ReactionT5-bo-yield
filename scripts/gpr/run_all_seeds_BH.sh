@@ -2,12 +2,12 @@
 # Run GPR experiments with multiple seeds for Buchwald-Hartwig dataset
 
 # Configuration
-DATA_PATH="../../data/Buchwald-Hartwig/Dreher_and_Doyle_reaction_t5_ready.csv"
+DATA_PATH="data/Buchwald-Hartwig/Dreher_and_Doyle_reaction_t5_ready.csv"
 DATASET_NAME="BH"
 N_TRIALS=100
 RADIUS=4
 N_BITS=2048
-OUTPUT_DIR="../../runs"
+OUTPUT_DIR="runs"
 
 # Seeds to run
 SEEDS=(1 2 3 4 5)
@@ -29,7 +29,7 @@ do
     echo "Starting experiment with seed: $SEED"
     echo "=========================================="
 
-    python run_experiment.py \
+    python scripts/gpr/run_experiment.py \
         --data "$DATA_PATH" \
         --dataset-name "$DATASET_NAME" \
         --n-trials $N_TRIALS \

@@ -2,7 +2,7 @@
 
 ## 概要
 
-本プロジェクトでは、事前学習済みTransformerモデル[ReactionT5v2](https://github.com/sagawatatsuya/ReactionT5v2)を用いたベイズ最適化により、化学反応の最適な反応条件を探索します。MC Dropoutにより予測の不確実性を推定し、獲得関数（Upper Confidence Bound）を用いて効率的な探索を実現しています。
+本プロジェクトは、事前学習済みTransformerモデル[ReactionT5v2](https://github.com/sagawatatsuya/ReactionT5v2)を用いたベイズ最適化により、化学反応の最適な反応条件を効率的に探索することを目的としています。MC Dropoutにより予測の不確実性を推定しています。
 
 ### 対象データセット
 
@@ -27,7 +27,7 @@
 
 ```bash
 # リポジトリのクローン
-git clone <repository-url>
+git clone https://github.com/kazumasa-okamoto/ReactionT5-bo-yield
 cd ReactionT5-bo-yield
 
 # 依存パッケージのインストール（uvを使用）
@@ -41,7 +41,7 @@ pip install -e .
 
 ```
 ReactionT5-bo-yield/
-├── notebooks/               # 分析用Jupyterノートブック
+├── notebooks/               # 実験用Jupyterノートブック
 │   ├── check_data.ipynb    # データの類似性確認
 │   ├── bo_yield_*.ipynb    # ReactionT5 BOの実験
 │   ├── greedy_yield_*.ipynb # ReactionT5 貪欲法の実験
@@ -62,34 +62,21 @@ ReactionT5-bo-yield/
 └── pyproject.toml          # プロジェクト設定
 ```
 
-## 実験方法
+## ベイズ最適化の実行
 
-### 1. データ類似性の確認
+各手法について、シード1〜5で複数回実行して評価を行っています。
 
-```bash
-# ノートブックを起動
-jupyter notebook notebooks/check_data.ipynb
-```
-
-ReactionT5v2の学習データ（ORD）に、各評価データセットと類似の反応が含まれているか確認します。
-
-### 2. ベイズ最適化の実行
-
-各手法について、シード1〜5で複数回実行して統計的評価を行います。
+### 個別で実行する場合
 
 #### ReactionT5 BO（提案手法）
 
 ```bash
 # スクリプトで実行
-python scripts/bo_yield/run_experiment.py --dataset NiB --seed 1
-
-# またはノートブックで実行
-jupyter notebook notebooks/bo_yield_NiB.ipynb
+python  scripts/bo_yield/run_experiment.py --dataset NiB --seed 1
 ```
 
 **特徴:**
 - MC Dropout（n_forward=30）による予測の不確実性推定
-- Upper Confidence Bound (UCB)獲得関数による探索・活用のバランス
 - 10ラウンド × 10試行 = 100試行の最適化
 
 #### GPR BO（ベースライン）
@@ -99,7 +86,7 @@ python scripts/gpr/run_experiment.py --dataset NiB --seed 1
 ```
 
 **特徴:**
-- Morgan Fingerprint（radius=2, nBits=2048）による分子表現
+- Morgan Fingerprint（radius=4, nBits=2048）による分子表現
 - Gaussian Process Regressionによる予測
 - 100試行のベイズ最適化
 
@@ -112,25 +99,6 @@ python scripts/optuna_tpe/run_experiment_NiB.py --seed 1
 **特徴:**
 - Tree-structured Parzen Estimator
 - 100試行の最適化
-
-#### 貪欲法
-
-```bash
-jupyter notebook notebooks/greedy_yield_NiB.ipynb
-```
-
-**特徴:**
-- ReactionT5v2の予測収率上位から順に選択
-- 探索なし、活用のみ
-
-### 3. 結果の比較
-
-```bash
-jupyter notebook notebooks/compare_all_results.ipynb
-```
-
-全データセット・全手法の結果を集計し、以下を生成します:
-- 最適化進捗の可視化（平均 ± 標準偏差）
 
 ## ノートブックの詳細
 

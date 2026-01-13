@@ -2,12 +2,12 @@
 # Run Optuna TPE experiments with multiple seeds for NiB dataset
 
 # Configuration
-DATA_PATH="../../data/NiB/inchi_23l.csv"
+DATA_PATH="data/NiB/inchi_23l.csv"
 DATASET_NAME="NiB"
 N_TRIALS=100
 N_STARTUP_TRIALS=10
 N_EI_CANDIDATES=24
-OUTPUT_DIR="../../runs"
+OUTPUT_DIR="runs"
 
 # Seeds to run
 SEEDS=(1 2 3 4 5)
@@ -31,7 +31,7 @@ do
     echo "Starting experiment with seed: $SEED"
     echo "=========================================="
 
-    python run_experiment_NiB.py \
+    python scripts/optuna_tpe/run_experiment_NiB.py \
         --data "$DATA_PATH" \
         --n-trials $N_TRIALS \
         --seed $SEED \
