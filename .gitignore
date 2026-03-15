@@ -1,13 +1,16 @@
 .venv/
 .python-version
 
+.ruff_cache/
+
 __pycache__/
 *.pyc
 *.pyo
 
-runs
+runs/
 
 data/ORD
 
 *.pid
 *.log
+*.pt
