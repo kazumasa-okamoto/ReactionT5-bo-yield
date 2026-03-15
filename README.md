@@ -1,126 +1,152 @@
-# ReactionT5v2を用いた化学反応収率のベイズ最適化
+# Bayesian Optimization of Reaction Conditions using ReactionT5
 
-## 概要
+Bayesian optimization of chemical reaction conditions using the pretrained Transformer model [ReactionT5v2](https://github.com/sagawatatsuya/ReactionT5v2). Predictive uncertainty is estimated via MC Dropout.
 
-本プロジェクトは、事前学習済みTransformerモデル[ReactionT5v2](https://github.com/sagawatatsuya/ReactionT5v2)を用いたベイズ最適化により、化学反応の最適な反応条件を効率的に探索することを目的としています。MC Dropoutにより予測の不確実性を推定しています。
+## ReactionT5-based Bayesian Optimization Workflow
 
-### 対象データセット
+```mermaid
+flowchart LR
 
-- **NiB**: Nickel-catalyzed Borylation（[ochem-data](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB)）
-- **Suzuki-Miyaura (SM)**: Suzuki-Miyaura coupling（[rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura)）
-- **Buchwald-Hartwig (BH)**: Buchwald-Hartwig amination（[rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Buchwald-Hartwig)）
+    A["<b>Search Space</b><br/>Reaction conditions<br/>(catalyst, additive, etc.)"]
 
-### 比較手法
+    subgraph BO["<b>Bayesian Optimization</b>"]
+        direction LR
+        B["<b>ReactionT5</b><br/>Surrogate model"]
+        C["<b>Sampling</b><br/>Uncertainty estimation<br/>(MC Dropout)<br/> Acquisition function (EI)"]
+        D["<b>Experiment</b><br/>Observed yield"]
+        E["<b>Model Update</b><br/>Fine-tuning"]
+    end
 
-- **ReactionT5 BO**: ReactionT5v2 + MC Dropout + ベイズ最適化（提案手法）
-- **GPR BO**: Morgan Fingerprint + Gaussian Process Regression + ベイズ最適化（ベースライン）
-- **Optuna TPE**: Tree-structured Parzen Estimator（ベースライン）
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> B
 
-## セットアップ
+    classDef search fill:#dbe7f3,stroke:#8aa3bf,stroke-width:2px,color:#111;
+    classDef rt5 fill:#f3ddd4,stroke:#d7a999,stroke-width:2px,color:#111;
+    classDef sampling fill:#eee4bf,stroke:#cdbf8a,stroke-width:2px,color:#111;
+    classDef experiment fill:#cfe3d9,stroke:#9bbba9,stroke-width:2px,color:#111;
+    classDef update fill:#e3e3e3,stroke:#bdbdbd,stroke-width:2px,color:#111;
+    classDef bo fill:#fffaf5,stroke:#e58a3a,stroke-width:2px,stroke-dasharray: 6 4,color:#111;
 
-### 必要要件
+    class A search;
+    class B rt5;
+    class C sampling;
+    class D experiment;
+    class E update;
+    class BO bo;
 
-- Python 3.11以上
-- CUDA対応GPU（推奨）
+    linkStyle 0 stroke:#666,stroke-width:2px;
+    linkStyle 1 stroke:#666,stroke-width:2px;
+    linkStyle 2 stroke:#666,stroke-width:2px;
+    linkStyle 3 stroke:#666,stroke-width:2px;
+    linkStyle 4 stroke:#666,stroke-width:2px;
+```
 
-### インストール
+## Datasets
+
+| Dataset | Reaction Type | Source |
+|---------|--------------|--------|
+| **Buchwald-Hartwig (BH)** | Pd-catalyzed amination | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Buchwald-Hartwig) |
+| **NiB** | Nickel-catalyzed Borylation | [ochem-data](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB) |
+| **Suzuki-Miyaura (SM)** | Pd-catalyzed cross-coupling | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura) |
+
+
+## Methods
+
+| Method | Model | Features | Script | Role |
+|--------|-------|----------|--------|------|
+| **ReactionT5 BO** | ReactionT5v2 + MC Dropout | Reaction SMILES | `scripts/bo_yield/` | **Proposed** |
+| **GNN BO** | GNN + MC Dropout | Molecular graphs | `scripts/gnn/` | Baseline |
+| **GPR BO** | Gaussian Process Regression | Morgan Fingerprint | `scripts/gpr/` | Baseline |
+| **Optuna TPE** | Tree-structured Parzen Estimator | Categorical conditions | `scripts/optuna_tpe/` | Baseline |
+
+## Setup
+
+**Requirements:** Python 3.11+, CUDA GPU (recommended)
 
 ```bash
-# リポジトリのクローン
 git clone https://github.com/kazumasa-okamoto/ReactionT5-bo-yield
 cd ReactionT5-bo-yield
 
-# 依存パッケージのインストール（uvを使用）
+# Install with uv
 uv sync
 
-# または、pipを使用
+# Or with pip
 pip install -e .
 ```
 
-## プロジェクト構成
+## Project Structure
 
 ```
 ReactionT5-bo-yield/
-├── notebooks/               # 実験用Jupyterノートブック
-│   ├── check_data.ipynb    # データの類似性確認
-│   ├── bo_yield_*.ipynb    # ReactionT5 BOの実験
-│   ├── greedy_yield_*.ipynb # ReactionT5 貪欲法の実験
-│   ├── optuna_yield_*.ipynb # Optuna TPEの実験
-│   ├── gpr_yield_*.ipynb   # GPR BOの実験
-│   └── compare_all_results.ipynb # 全結果の比較・可視化
-├── scripts/                 # 実験用スクリプト
-│   ├── bo_yield/           # ReactionT5 BOの実装
-│   ├── gpr/                # GPR BOの実装
-│   └── optuna_tpe/         # Optuna TPEの実装
-├── data/                    # データセット
+├── scripts/
+│   ├── bo_yield/           # ReactionT5 BO (pretrained transformer-based)
+│   ├── gnn/                # GNN BO (graph neural network-based)
+│   ├── gpr/                # GPR BO (fingerprint-based)
+│   └── optuna_tpe/         # Optuna TPE (categorical parameter-based)
+├── notebooks/
+│   ├── bo_yield_*.ipynb    # ReactionT5 BO experiments
+│   ├── gpr_yield_*.ipynb   # GPR BO experiments
+│   ├── optuna_yield_*.ipynb # Optuna TPE experiments
+│   ├── greedy_yeaild_*.ipynb # ReactionT5 greedy selection expreriments
+│   ├── gnn_yield.ipynb     # GNN BO experiments
+│   ├── visualize_all_results.ipynb    # Cross-method result comparison
+│   ├── visualize_dataset_overlap.ipynb # Dataset overlap analysis
+│   └── visualize_dateset_umap.ipynb   # UMAP embedding visualization
+├── data/
 │   ├── NiB/
 │   ├── Suzuki-Miyaura/
 │   ├── Buchwald-Hartwig/
 │   └── ORD/
-├── data_utils/             # データ前処理スクリプト
-├── runs/                   # 実験結果の保存先
-└── pyproject.toml          # プロジェクト設定
+├── runs/                   # Experiment outputs
+└── pyproject.toml
 ```
 
-## ベイズ最適化の実行
+## Running Experiments
 
-各手法について、シード1〜5で複数回実行して評価を行っています。
+All commands are run from the **project root**. Each method provides shell scripts for seeds 1–5.
 
-### 個別で実行する場合
-
-#### ReactionT5 BO（提案手法）
+### ReactionT5 BO (Proposed)
 
 ```bash
-# スクリプトで実行
-python  scripts/bo_yield/run_experiment.py --dataset NiB --seed 1
+# Single run
+python scripts/bo_yield/run_experiment.py \
+    --data data/NiB/inchi_23l_reaction_t5_ready.csv \
+    --dataset-name NiB --seed 1
+
+# All seeds
+bash scripts/bo_yield/run_all_seeds_NiB.sh
 ```
 
-**特徴:**
-- MC Dropout（n_forward=30）による予測の不確実性推定
-- 10ラウンド × 10試行 = 100試行の最適化
-
-#### GPR BO（ベースライン）
+### GNN BO (Baseline)
 
 ```bash
-python scripts/gpr/run_experiment.py --dataset NiB --seed 1
+python scripts/gnn/run_experiment.py \
+    --data data/NiB/inchi_23l_reaction_t5_ready.csv \
+    --dataset-name NiB --seed 1
+
+bash scripts/gnn/run_all_seeds_NiB.sh
 ```
 
-**特徴:**
-- Morgan Fingerprint（radius=4, nBits=2048）による分子表現
-- Gaussian Process Regressionによる予測
-- 100試行のベイズ最適化
-
-#### Optuna TPE（ベースライン）
+### GPR BO (Baseline)
 
 ```bash
-python scripts/optuna_tpe/run_experiment_NiB.py --seed 1
+python scripts/gpr/run_experiment.py \
+    --data data/NiB/inchi_23l_reaction_t5_ready.csv \
+    --dataset-name NiB --seed 1
+
+bash scripts/gpr/run_all_seeds_NiB.sh
 ```
 
-**特徴:**
-- Tree-structured Parzen Estimator
-- 100試行の最適化
+### Optuna TPE (Baseline)
 
-## ノートブックの詳細
+```bash
+python scripts/optuna_tpe/run_experiment_NiB.py \
+    --data data/NiB/inchi_23l.csv --seed 1
 
-### 共通ノートブック
+bash scripts/optuna_tpe/run_all_seeds_NiB.sh
+```
 
-| ノートブック | 説明 |
-|------------|------|
-| `check_data.ipynb` | ReactionT5v2の学習データ（[ORD](https://drive.google.com/file/d/1JozA2OlByfZ-ILt5H5YrTjLJvSvD8xdL/view?usp=drive_link)）との類似性確認 |
-| `compare_all_results.ipynb` | 全データセット・全手法の結果比較と可視化 |
-
-### データセット別ノートブック
-
-各データセット（NiB、SM、BH）に対して、以下の4つのノートブックが存在します:
-
-| 種類 | 説明 | 特徴 |
-|-----|------|------|
-| `bo_yield_*.ipynb` | **ReactionT5 BO**（提案手法） | MC Dropout + UCB獲得関数 |
-| `gpr_yield_*.ipynb` | **GPR BO**（ベースライン） | Morgan Fingerprint + GPR |
-| `optuna_yield_*.ipynb` | **Optuna TPE**（ベースライン） | Tree-structured Parzen Estimator |
-| `greedy_yield_*.ipynb` | **ReactionT5 貪欲法** | 予測収率上位から順に選択 |
-
-**データセット:**
-- `*_NiB.ipynb`: NiB（Nickel-catalyzed Borylation）データセット
-- `*_SM.ipynb`: Suzuki-Miyauraデータセット
-- `*_BH.ipynb`: Buchwald-Hartwigデータセット
+For full argument details, see the README in each script directory.

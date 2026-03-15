@@ -2,7 +2,7 @@
 # Run experiments with multiple seeds
 
 # Configuration
-DATA_PATH="../../data/NiB/inchi_23l_reaction_t5_ready.csv"
+DATA_PATH="data/NiB/inchi_23l_reaction_t5_ready.csv"
 DATASET_NAME="NiB"
 N_ROUNDS=10
 TRIALS_PER_ROUND=10
@@ -14,7 +14,7 @@ WEIGHT_DECAY=0.01
 BATCH_SIZE_TRAIN=8
 BATCH_SIZE_EVAL=16
 VAL_RATIO=0.2
-OUTPUT_DIR="../../runs"
+OUTPUT_DIR="runs"
 
 # Seeds to run
 SEEDS=(1 2 3 4 5)
@@ -37,7 +37,7 @@ do
     echo "Starting experiment with seed: $SEED"
     echo "=========================================="
 
-    python run_experiment.py \
+    python scripts/bo_yield/run_experiment.py \
         --data "$DATA_PATH" \
         --dataset-name "$DATASET_NAME" \
         --n-rounds $N_ROUNDS \
@@ -81,7 +81,7 @@ do
 
     if [ -f "$CSV_PATH" ]; then
         echo "Visualizing seed $SEED..."
-        python visualize_results.py --csv "$CSV_PATH" --logdir "$LOGDIR"
+        python scripts/bo_yield/visualize_results.py --csv "$CSV_PATH" --logdir "$LOGDIR"
         echo "[Success] Visualization for seed $SEED completed"
     else
         echo "[Warning] CSV file not found for seed $SEED: $CSV_PATH"

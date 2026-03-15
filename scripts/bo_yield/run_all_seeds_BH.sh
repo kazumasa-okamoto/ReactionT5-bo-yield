@@ -37,7 +37,7 @@ do
     echo "Starting experiment with seed: $SEED"
     echo "=========================================="
 
-    python run_experiment.py \
+    python scripts/bo_yield/run_experiment.py \
         --data "$DATA_PATH" \
         --dataset-name "$DATASET_NAME" \
         --n-rounds $N_ROUNDS \
@@ -81,7 +81,7 @@ do
 
     if [ -f "$CSV_PATH" ]; then
         echo "Visualizing seed $SEED..."
-        python visualize_results.py --csv "$CSV_PATH" --logdir "$LOGDIR"
+        python scripts/bo_yield/visualize_results.py --csv "$CSV_PATH" --logdir "$LOGDIR"
         echo "✓ Visualization for seed $SEED completed"
     else
         echo "⚠ CSV file not found for seed $SEED: $CSV_PATH"
