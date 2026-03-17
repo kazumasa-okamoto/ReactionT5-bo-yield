@@ -48,9 +48,9 @@ flowchart LR
 
 | Dataset | Reaction Type | Source |
 |---------|--------------|--------|
-| **Buchwald-Hartwig (BH)** | Pd-catalyzed amination | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Buchwald-Hartwig) |
-| **NiB** | Nickel-catalyzed Borylation | [ochem-data](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB) |
-| **Suzuki-Miyaura (SM)** | Pd-catalyzed cross-coupling | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura) |
+| **Buchwald-Hartwig (BH)** | Buchwald-Hartwig amination | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Buchwald-Hartwig) |
+| **Suzuki-Miyaura (SM)** | Suzuki-Miyaura coupling | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura) |
+| **NiB** | Ni-catalyzed borylation | [ochem-data](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB) |
 
 
 ## Methods
