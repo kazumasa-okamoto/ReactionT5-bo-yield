@@ -150,3 +150,14 @@ bash scripts/optuna_tpe/run_all_seeds_NiB.sh
 ```
 
 For full argument details, see the README in each script directory.
+
+## Citation
+```
+@misc{okamoto2026csj,
+  author       = {Okamoto, Kazumasa and Sagawa, Tatsuya and Kojima, Ryosuke},
+  title        = {Bayesian Optimization of Reaction Conditions using Large-scale Pretrained Chemical Reaction Models},
+  howpublished = {Poster presented at the 106th CSJ Annual Meeting},
+  year         = {2026},
+  month        = {Mar.},
+}
+```
