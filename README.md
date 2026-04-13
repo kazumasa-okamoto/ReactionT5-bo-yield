@@ -52,6 +52,17 @@ flowchart LR
 | **Suzuki-Miyaura (SM)** | Suzuki-Miyaura coupling | [rxn_yields](https://github.com/rxn4chemistry/rxn_yields/tree/master/data/Suzuki-Miyaura) |
 | **NiB** | Ni-catalyzed borylation | [ochem-data](https://github.com/doyle-lab-ucla/ochem-data/tree/main/NiB) |
 
+### Pretraining Dataset (ORD)
+
+The Open Reaction Database (ORD) dataset is required to run the pretraining data comparison notebooks (`notebooks/visualize_dataset_overlap.ipynb` and `notebooks/visualize_dateset_umap.ipynb`). Download it from [Google Drive](https://drive.google.com/file/d/1JozA2OlByfZ-ILt5H5YrTjLJvSvD8xdL/view) and place it as follows.
+
+```
+ReactionT5-bo-yield/
+└── data/
+    └── ORD/
+        └── all_ord_reaction_uniq_with_attr20240506_v3_train.csv
+```
+
 
 ## Methods
 
